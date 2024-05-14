@@ -1,6 +1,7 @@
 const fs = require('fs');
 
 const BOARD_SIZE = 19;
+const ITEMS_COUNT = 5;
 const FILE_NAME = 'input3.txt';
 
 class RenjuGame {
@@ -22,32 +23,32 @@ class RenjuGame {
     const currentPlayer = this.board[row][col];
     for (const [dx, dy] of directions) {
       let consecutive = 1;
-      let r = row + dx;
-      let c = col + dy;
+      let rowDx = row + dx;
+      let colDx = col + dy;
 
-      while (r >= 0 && r < this.boardSize && c >= 0 && c < this.boardSize && this.board[r][c] === currentPlayer) {
+      while (rowDx >= 0 && rowDx < this.boardSize && colDx >= 0 && colDx < this.boardSize && this.board[rowDx][colDx] === currentPlayer) {
         consecutive++;
-        r += dx;
-        c += dy;
+        rowDx += dx;
+        colDx += dy;
 
-        if (this.board[r - dx][c - dy] === 0) {
+        if (this.board[rowDx - dx][colDx - dy] === 0) {
           break;
         }
       }
 
-      r = row - dx;
-      c = col - dy;
-      while (r >= 0 && r < this.boardSize && c >= 0 && c < this.boardSize && this.board[r][c] === currentPlayer) {
+      rowDx = row - dx;
+      colDx = col - dy;
+      while (rowDx >= 0 && rowDx < this.boardSize && colDx >= 0 && colDx < this.boardSize && this.board[rowDx][colDx] === currentPlayer) {
         consecutive++;
-        r -= dx;
-        c -= dy;
+        rowDx -= dx;
+        colDx -= dy;
 
-        if (this.board[r + dx][c + dy] === 0) {
+        if (this.board[rowDx + dx][colDx + dy] === 0) {
           break;
         }
       }
 
-      if (consecutive === 5) {
+      if (consecutive === ITEMS_COUNT) {
         return true;
       }
     }
@@ -65,11 +66,21 @@ fs.readFile(FILE_NAME, 'utf8', (err, data) => {
   const lines = data.trim().split('\n');
   const testCases = parseInt(lines[0]);
 
+  if (lines.length < BOARD_SIZE) {
+    console.error("Error in input data");
+  }
+
   let idx = 1;
   for (let t = 0; t < testCases; t++) {
     const game = new RenjuGame();
+
     for (let i = 0; i < BOARD_SIZE; i++) {
       const row = lines[idx++].split(' ').map(Number);
+
+      if (row.length < BOARD_SIZE) {
+        console.error("Error in input data");
+      }
+
       for (let j = 0; j < BOARD_SIZE; j++) {
         game.board[i][j] = row[j];
       }
